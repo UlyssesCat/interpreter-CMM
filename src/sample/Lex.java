@@ -15,6 +15,7 @@ public class Lex {
     static char currentChar;
     static ArrayList<Token> tokens = new ArrayList<>();//创建的token序列
     static StringBuilder sb = new StringBuilder();
+    static String LexError = "";
 
     public static ArrayList<Token> lexAnalysis(String input) {
         if(tokens.size()!=0)
@@ -45,8 +46,7 @@ public class Lex {
             str.append('#');
             fr.close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LexError += "File reader出错\n";
             System.out.println("File reader出错");
         }
         return str.toString();
@@ -229,8 +229,7 @@ public class Lex {
                                     }
                                 }catch (Exception e)
                                 {
-                                    //throws
-                                    System.out.println(e.getMessage());
+                                    System.out.println("引号不匹配");
                                 }finally {
                                     tokens.add(new Token(Token.LITERAL_STRING, sbr.toString(), lineNo));
                                     sbr.delete(0, sbr.length());
@@ -290,7 +289,9 @@ public class Lex {
                                     if(currentChar=='#') break;
                                     else if(currentChar==' '||currentChar=='\r'||currentChar=='\n'||currentChar=='\f'||currentChar=='\t')   readChar();
                                     else {
-                                        throw new Error("illegal char");
+                                        LexError+="非法字符:"+currentChar+"\tlineNo:"+lineNo;
+                                        LexError+="\n";
+                                        readChar();
                                     }
         }
     }

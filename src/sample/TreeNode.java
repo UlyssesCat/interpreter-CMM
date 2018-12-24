@@ -29,6 +29,9 @@ public class TreeNode {
 
         return null;
     }
+
+
+    public static final int WRONG = -1;
     /**
      * 语句块使用链表存储,使用NULL类型的TreeNode作为头部,注意不要使用NULL的节点存储信息,仅仅使用next指向下一个TreeNode
      */

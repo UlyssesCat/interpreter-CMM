@@ -7,7 +7,9 @@ public class Token {
 
 
 
-
+    public Token(int tokenNo){
+        this.tokenNo = tokenNo;
+    }
     public Token(int tokenNo,int lineNo){
         this.tokenNo = tokenNo;
         this.lineNo = lineNo;
@@ -17,6 +19,7 @@ public class Token {
         this.value = value;
         this.lineNo = lineNo;
     }
+    public static final int START = 0;
     /** if */
     public static final int IF = 1;
     /** else */

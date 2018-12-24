@@ -30,6 +30,9 @@ public class Controller {
                 Lex.tokenResult="";
                 Lex.LexError="";
                 Grammar.graAnalysis(tokens);//语法分析
+                if(tokens.size()!=0)
+                    for(int i=tokens.size()-1;i>=0;i--)
+                        tokens.remove(i);
                 if(Grammar.GraError.equals("")){
                     Grammar.GraError="";
                     tv.refresh();

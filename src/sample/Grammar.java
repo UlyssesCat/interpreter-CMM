@@ -17,9 +17,10 @@ public class Grammar {
     static String GraError="";
     public static LinkedList<TreeNode> graAnalysis(ArrayList<Token> tokens){
         if(treeNodeList.size()!=0)
-            for(int i=0;i<treeNodeList.size();i++)
+            for(int i=treeNodeList.size()-1;i>=0;i--)
                 treeNodeList.remove(i);
         tokenList=tokens;
+        //tokenList.add(0,new Token(Token.START));
         iterator = tokenList.listIterator();
         TreeNode node = new TreeNode(TreeNode.PROGRAM);
         TreeNode tmp=null;
@@ -176,10 +177,10 @@ public class Grammar {
         return node;
     }
     private static TreeNode parseParams() throws ParserException{
-        if(checkNextTokenType(Token.RPARENT))   return new TreeNode(TreeNode.NULL);
+        if(checkNextTokenType(Token.RPARENT))   return new TreeNode(TreeNode.PARAM);
         else if(checkNextTokenType(Token.INT, Token.DOUBLE, Token.STRING)){
 
-            TreeNode node = new TreeNode(TreeNode.NULL);
+            TreeNode node = new TreeNode(TreeNode.PARAM);
             TreeNode header = node;
             TreeNode temp= null;
 
@@ -305,7 +306,7 @@ public class Grammar {
         return node;
     }
     private static TreeNode parseStmtBlock() throws ParserException {
-        TreeNode node = new TreeNode(TreeNode.NULL);
+        TreeNode node = new TreeNode(TreeNode.BLOCK);
         TreeNode header = node;
         TreeNode temp= null;
         consumeNextToken(Token.LBRACE);
@@ -320,8 +321,11 @@ public class Grammar {
     private static TreeNode parseAssignStmt() throws ParserException {
         TreeNode node = new TreeNode(TreeNode.ASSIGN_STMT);
         node.mLeft=variableName();
-        consumeNextToken(Token.ASSIGN);
+        int type = consumeNextToken(Token.ASSIGN,Token.PLUSEQUAL,Token.MINUSEQUAL,Token.MULTIEQUAL,Token.DIVEQUAL);// a=1;   a+=1;    a++;
+//        TreeNode signNode = new TreeNode(type);
+//        signNode.mLeft = new TreeNode()
         node.mMiddle=parseExp();
+        node.mDataType=type;
         consumeNextToken(Token.SEMI);
 
         return node;
@@ -542,7 +546,7 @@ public class Grammar {
         }
         return 0;
     }//获取下一个的lineNo，如果没有（结束了）返回0
-    private static void consumeNextToken(int ...type) throws ParserException {
+    private static int consumeNextToken(int ...type) throws ParserException {
         if (iterator.hasNext()) {
             currentToken = iterator.next();
             /*if (currentToken.tokenNo == type) {
@@ -550,7 +554,7 @@ public class Grammar {
             }*/
             for (int i : type) {
                 if(currentToken.tokenNo==i)
-                    return;
+                    return currentToken.tokenNo;
             }
         }
         while(iterator.hasNext()){
@@ -562,6 +566,7 @@ public class Grammar {
         GraError+=("line " + currentToken.lineNo + " : next token should be -> operator");
         GraError+="\n";
         //throw new ParserException("line " + currentToken.lineNo + " : next token should be -> operator");
+        return -1;
     }
     private static void consumeNextToken(int type) throws ParserException {
         if (iterator.hasNext()) {

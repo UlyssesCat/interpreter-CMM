@@ -4,7 +4,10 @@ public class TreeNode {
     public TreeNode(int val){
         type = val;
     }
-
+    public TreeNode(int val,int i){
+        type = val;
+        name=getString()+i;
+    }
 
 
     public String getString(){
@@ -27,6 +30,7 @@ public class TreeNode {
         if(type==16) return "PARSE_STMT";
         if(type==17) return "PROGRAM";
         if(type==18) return "BLOCK";
+        if(type==19) return "PARAMS";
         return null;
     }
 
@@ -50,17 +54,19 @@ public class TreeNode {
     public static final int PARSE_STMT = 16;
     public static final int PROGRAM = 17;
     public static final int BLOCK = 18;
+    public static final int PARAMS = 19;
+
     public int type;
-    public TreeNode mLeft;
-    public TreeNode mMiddle;
-    public TreeNode mRight;
+    public TreeNode mLeft=null;
+    public TreeNode mMiddle=null;
+    public TreeNode mRight=null;
 
 
 
     public int mDataType;
     public String value;
-    public TreeNode mNext;
-
+    public TreeNode mNext=null;
+    public String name;
     @Override
     public String toString() {
         return "["+type+"   "+mLeft+"   "+mNext+"]";

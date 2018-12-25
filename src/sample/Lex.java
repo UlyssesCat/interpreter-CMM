@@ -258,9 +258,17 @@ public class Lex {
                                         readChar();readChar();readChar();readChar();
                                         tokens.add(new Token(Token.VOID,"VOID", lineNo));
                                         continue;
+                                    }else if(currentChar=='r'&&inputChar[count]=='e'&&inputChar[count+1]=='a'&&inputChar[count+2]=='d'&&inputChar[count+3]==' '){//可能越界？
+                                        readChar();readChar();readChar();readChar();
+                                        tokens.add(new Token(Token.READ,"READ", lineNo));
+                                        continue;
                                     }else if(currentChar=='w'&&inputChar[count]=='h'&&inputChar[count+1]=='i'&&inputChar[count+2]=='l'&&inputChar[count+3]=='e'&&inputChar[count+4]=='('){//可能越界？
                                         readChar();readChar();readChar();readChar();readChar();
                                         tokens.add(new Token(Token.WHILE,"WHILE", lineNo));
+                                        continue;
+                                    }else if(currentChar=='w'&&inputChar[count]=='r'&&inputChar[count+1]=='i'&&inputChar[count+2]=='t'&&inputChar[count+3]=='e'&&inputChar[count+4]==' '){//可能越界？
+                                        readChar();readChar();readChar();readChar();readChar();
+                                        tokens.add(new Token(Token.WRITE,"WRITE", lineNo));
                                         continue;
                                     }
                                     else if(currentChar=='s'&&inputChar[count]=='t'&&inputChar[count+1]=='r'&&inputChar[count+2]=='i'&&inputChar[count+3]=='n'&&inputChar[count+4]=='g'&&inputChar[count+5]==' '){

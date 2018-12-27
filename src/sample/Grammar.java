@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import javax.swing.text.StyledEditorKit.ForegroundAction;
-
 public class Grammar {
     static ArrayList<Token> tokenList;
     static ListIterator<Token> iterator;//tokenList的迭代器
@@ -18,7 +16,6 @@ public class Grammar {
     static TreeNode root = null;
     static String GraError="";
     static int a[]=new int[20];
-
     public static LinkedList<TreeNode> graAnalysis(ArrayList<Token> tokens){
         if(treeNodeList.size()!=0)
             for(int i=treeNodeList.size()-1;i>=0;i--)
@@ -33,11 +30,6 @@ public class Grammar {
         TreeNode node = new TreeNode(TreeNode.PROGRAM);
         TreeNode tmp=null;
         treeNodeList.add(node);
-//        if(iterator.hasNext()){
-//            tmp=parseStmt();
-//            node.mMiddle=tmp;
-//            node=tmp;
-//        }/////???
         while(iterator.hasNext()){
             tmp=parseStmt();
             node.mNext=tmp;
@@ -47,7 +39,6 @@ public class Grammar {
         root = treeNodeList.getFirst();
         return treeNodeList;
     }
-
     private static TreeNode parseStmt() throws ParserException {
         switch (getNextTokenType()) {
             case Token.IF: return parseIfStmt();
@@ -62,14 +53,14 @@ public class Grammar {
             case Token.ID: return parseAssignStmt();
             case Token.RETURN: return parseReturnStmt();
             default:
-                GraError+=("line " + getNextTokenLineNo() + " : expected token");
+                GraError+=("line " + currentToken.lineNo + " : expected token");
                 if(iterator.hasNext())  currentToken = iterator.next();
                 GraError+="\n";
                 return new TreeNode(TreeNode.WRONG);
         }
     }//stmt-block
     private static TreeNode parseReturnStmt() throws ParserException {
-        TreeNode node ;
+        TreeNode node;
         if(a[0]==0)
         {
             node = new TreeNode(TreeNode.RETURN_STMT);
@@ -109,7 +100,7 @@ public class Grammar {
         return node;
     }
     private static TreeNode parseWhileStmt() throws ParserException {
-        TreeNode node ;
+        TreeNode node;
         if(a[2]==0)
         {
             node = new TreeNode(TreeNode.WHILE_STMT);
@@ -120,6 +111,7 @@ public class Grammar {
             node = new TreeNode(TreeNode.WHILE_STMT,a[2]);
             a[2]++;
         }
+
         consumeNextToken(Token.WHILE);//消耗一个while
         consumeNextToken(Token.LPARENT);//消耗一个左括号
         node.mLeft=parseExp();//exp
@@ -128,7 +120,7 @@ public class Grammar {
         return node;
     }
     private static TreeNode parseReadStmt() throws ParserException {
-        TreeNode node ;
+        TreeNode node;
         if(a[3]==0)
         {
             node = new TreeNode(TreeNode.READ_STMT);
@@ -139,13 +131,14 @@ public class Grammar {
             node = new TreeNode(TreeNode.READ_STMT,a[3]);
             a[3]++;
         }
+
         consumeNextToken(Token.READ);
         node.mLeft=variableName();
         consumeNextToken(Token.SEMI);
         return node;
     }
     private static TreeNode parseWriteStmt() throws ParserException {
-        TreeNode node ;
+        TreeNode node;
         if(a[4]==0)
         {
             node = new TreeNode(TreeNode.WRITE_STMT);
@@ -156,6 +149,7 @@ public class Grammar {
             node = new TreeNode(TreeNode.WRITE_STMT,a[4]);
             a[4]++;
         }
+
         consumeNextToken(Token.WRITE);
         node.mLeft=parseExp();
         consumeNextToken(Token.SEMI);
@@ -173,10 +167,16 @@ public class Grammar {
                 return parseDeclareVarStmt();
             }
         }else{
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be variable type");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be variable type");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be variable type");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : next token should be variable type");
         }
 
     }
@@ -192,6 +192,7 @@ public class Grammar {
             node = new TreeNode(TreeNode.DECLARE_FUN_STMT,a[5]);
             a[5]++;
         }
+
         TreeNode varNode;
         if(a[6]==0)
         {
@@ -202,7 +203,7 @@ public class Grammar {
         {
             varNode = new TreeNode(TreeNode.FUN,a[6]);
             a[6]++;
-        }
+        }//存储返回值类型和函数名
         //if(checkNextTokenType(Token.INT, Token.DOUBLE, Token.STRING, Token.VOID)){
         if(currentToken.tokenNo==Token.INT||currentToken.tokenNo==Token.DOUBLE||currentToken.tokenNo==Token.STRING||currentToken.tokenNo==Token.VOID){
             int type = currentToken.tokenNo;
@@ -216,7 +217,13 @@ public class Grammar {
                 varNode.mDataType= Token.VOID;
             }
         }else{
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be variable type");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be variable type");
             GraError+="\n";
             return  new TreeNode(TreeNode.WRONG);
         }
@@ -224,7 +231,13 @@ public class Grammar {
             if(iterator.hasNext())  currentToken = iterator.next();
             varNode.value=currentToken.value;
         }else {
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be ID");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be ID");
             GraError+="\n";
             return  new TreeNode(TreeNode.WRONG);
         }
@@ -251,7 +264,8 @@ public class Grammar {
                 a[7]++;
             }
             return node;
-        } else if(checkNextTokenType(Token.INT, Token.DOUBLE, Token.STRING)){
+        }
+        else if(checkNextTokenType(Token.INT, Token.DOUBLE, Token.STRING)){
 
             TreeNode node;
             if(a[8]==0)
@@ -278,11 +292,16 @@ public class Grammar {
             return header;
 
         }else{
-
-            GraError+=("line " + getNextTokenLineNo() + " : wrong params");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : wrong params");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : wrong params");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : wrong params");
         }
     }
     private static TreeNode parseParam() throws ParserException{
@@ -297,6 +316,7 @@ public class Grammar {
             node = new TreeNode(TreeNode.PARAM,a[8]);
             a[8]++;
         }
+
         if(checkNextTokenType(Token.INT, Token.DOUBLE, Token.STRING)){
             if(iterator.hasNext())  currentToken = iterator.next();
             int type = currentToken.tokenNo;
@@ -310,10 +330,16 @@ public class Grammar {
                 node.mDataType= Token.VOID;
             }
         }else{
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be variable type");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be variable type");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be variable type");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : next token should be variable type");
         }
 
         if(checkNextTokenType(Token.ID)){
@@ -326,10 +352,10 @@ public class Grammar {
                     break;
                 }
             }
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be ID");
+            GraError+=("line " + currentToken.lineNo + " : next token should be ID");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be ID");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : next token should be ID");
         }
 
         return node;
@@ -346,7 +372,7 @@ public class Grammar {
             node = new TreeNode(TreeNode.DECLARE_VAR_STMT,a[9]);
             a[9]++;
         }
-        TreeNode varNode;//存储变量名和类型
+        TreeNode varNode;
         if(a[10]==0)
         {
             varNode = new TreeNode(TreeNode.VAR);
@@ -357,6 +383,7 @@ public class Grammar {
             varNode = new TreeNode(TreeNode.VAR,a[10]);
             a[10]++;
         }
+
         if(currentToken.tokenNo==Token.INT||currentToken.tokenNo==Token.DOUBLE||currentToken.tokenNo==Token.STRING){
             if(iterator.hasNext())  currentToken = iterator.next();
             int type = currentToken.tokenNo;
@@ -369,21 +396,31 @@ public class Grammar {
                 varNode.mDataType= Token.STRING;
             }
         }else{
-
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be variable type");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be variable type");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be variable type");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : next token should be variable type");
         }
         if(checkNextTokenType(Token.ID)){
             if(iterator.hasNext())  currentToken = iterator.next();
             varNode.value=currentToken.value;
         }else {
-
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be ID");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be ID");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be ID");
+            return  new TreeNode(TreeNode.WRONG);
+            //throw new ParserException("line " + currentToken.lineNo + " : next token should be ID");
         }
         if (getNextTokenType() == Token.ASSIGN) {//单个元素可以声明并赋值
             consumeNextToken(Token.ASSIGN);
@@ -392,9 +429,7 @@ public class Grammar {
             consumeNextToken(Token.LBRACKET);
             varNode.mLeft=parseExp();
             consumeNextToken(Token.RBRACKET);
-        }else{
-
-        }
+        }else{}
         consumeNextToken(Token.SEMI);
         node.mLeft=varNode;
         return node;
@@ -532,6 +567,7 @@ public class Grammar {
                 expNode = new TreeNode(TreeNode.FACTOR,a[14]);
                 a[14]++;
             }
+
             switch (getNextTokenType()) {
                 case Token.LPARENT://(exp)
                     consumeNextToken(Token.LPARENT);
@@ -540,7 +576,6 @@ public class Grammar {
                     break;
                 case Token.LITERAL_INT:
                 case Token.LITERAL_DOUBLE:
-                case Token.LITERAL_STRING:
                     expNode.mLeft=literal();
                     break;
                 case Token.MINUS://+a
@@ -559,10 +594,16 @@ public class Grammar {
             }
             return expNode;
         }
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be factor");
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        GraError+=("line " + currentToken.lineNo + " : next token should be factor");
         GraError+="\n";
-        //return  new TreeNode(TreeNode.WRONG);
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be factor");
+        return  new TreeNode(TreeNode.WRONG);
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be factor");
     }
     private static TreeNode literal() throws ParserException {//实际值节点
         if (iterator.hasNext()) {
@@ -587,10 +628,16 @@ public class Grammar {
                 // continue execute until throw
             }
         }
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be literal value");
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        GraError+=("line " + currentToken.lineNo + " : next token should be literal value");
         GraError+="\n";
-        //return  new TreeNode(TreeNode.WRONG);
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be literal value");
+        return  new TreeNode(TreeNode.WRONG);
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be literal value");
     }
     private static TreeNode logicalOp() throws ParserException {//== <> >= <= > < 逻辑运算符
         if (iterator.hasNext()) {
@@ -613,14 +660,21 @@ public class Grammar {
                     node = new TreeNode(TreeNode.OP,a[16]);
                     a[16]++;
                 }
+
                 node.mDataType=type;
                 return node;
             }
         }
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be logical operator");
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        GraError+=("line " + currentToken.lineNo + " : next token should be logical operator");
         GraError+="\n";
-        //return  new TreeNode(TreeNode.WRONG);
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be logical operator");
+        return  new TreeNode(TreeNode.WRONG);
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be logical operator");
     }
     private static TreeNode addtiveOp() throws ParserException {//+ -
         if (iterator.hasNext()) {
@@ -638,15 +692,20 @@ public class Grammar {
                     node = new TreeNode(TreeNode.OP,a[16]);
                     a[16]++;
                 }
-
                 node.mDataType=type;
                 return node;
             }
         }
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be addtive operator");
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        GraError+=("line " + currentToken.lineNo + " : next token should be addtive operator");
         GraError+="\n";
-        //return  new TreeNode(TreeNode.WRONG);
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be addtive operator");
+        return  new TreeNode(TreeNode.WRONG);
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be addtive operator");
     }
     private static TreeNode multiplyOp() throws ParserException {
         if (iterator.hasNext()) {
@@ -664,18 +723,23 @@ public class Grammar {
                     node = new TreeNode(TreeNode.OP,a[16]);
                     a[16]++;
                 }
-
                 node.mDataType=type;
                 return node;
             }
         }
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be multiple operator");
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        GraError+=("line " + currentToken.lineNo + " : next token should be multiple operator");
         GraError+="\n";
-        //return  new TreeNode(TreeNode.WRONG);
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be multiple operator");
+        return  new TreeNode(TreeNode.WRONG);
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be multiple operator");
     }
     private static TreeNode variableName() throws ParserException {
-        TreeNode node;//存储变量名和类型
+        TreeNode node;
         if(a[10]==0)
         {
             node = new TreeNode(TreeNode.VAR);
@@ -690,10 +754,16 @@ public class Grammar {
             if(iterator.hasNext())  currentToken = iterator.next();
             node.value=currentToken.value;
         } else {
-            GraError+=("line " + getNextTokenLineNo() + " : next token should be ID");
+            while(iterator.hasNext()){
+                currentToken = iterator.next();
+                if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                    break;
+                }
+            }
+            GraError+=("line " + currentToken.lineNo + " : next token should be ID");
             GraError+="\n";
-            //return  new TreeNode(TreeNode.WRONG);
-            throw new ParserException("line " + getNextTokenLineNo() + " : next token should be ID");
+            return  new TreeNode(TreeNode.WRONG);
+            // throw new ParserException("line " + currentToken.lineNo + " : next token should be ID");
         }
         if (getNextTokenType() == Token.LBRACKET) {//a[0]
             consumeNextToken(Token.LBRACKET);
@@ -711,14 +781,14 @@ public class Grammar {
         }
         return 0;
     }//获取下一个的tokenNo，如果没有（结束了）返回0
-    private static int getNextTokenLineNo() {
-        if (iterator.hasNext()) {
-            int type = iterator.next().lineNo;
-            iterator.previous();
-            return type;
-        }
-        return 0;
-    }//获取下一个的lineNo，如果没有（结束了）返回0
+    /*  private static int currentToken.lineNo {
+          if (iterator.hasNext()) {
+              int type = iterator.next().lineNo;
+              iterator.previous();
+              return type;
+          }
+          return 0;
+      }*///获取下一个的lineNo，如果没有（结束了）返回0
     private static int consumeNextToken(int ...type) throws ParserException {
         if (iterator.hasNext()) {
             currentToken = iterator.next();
@@ -730,21 +800,41 @@ public class Grammar {
                     return currentToken.tokenNo;
             }
         }
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
         GraError+=("line " + currentToken.lineNo + " : next token should be -> operator");
         GraError+="\n";
-        throw new ParserException("line " + currentToken.lineNo + " : next token should be -> operator");
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be -> operator");
+        return -1;
     }
     private static void consumeNextToken(int type) throws ParserException {
+        String t="";
+        int line=0;
         if (iterator.hasNext()) {
             currentToken = iterator.next();
+            line=currentToken.lineNo;
             if (currentToken.tokenNo == type) {
                 return;
             }
         }
         //consumeNextToken();
-        GraError+=("line " + getNextTokenLineNo() + " : next token should be -> " + new Token(type, 0));
+        while(iterator.hasNext()){
+            currentToken = iterator.next();
+            if(currentToken.tokenNo==Token.RBRACE||currentToken.tokenNo==Token.RPARENT||currentToken.tokenNo==Token.SEMI) {
+                break;
+            }
+        }
+        if(type==19) t="SEMI";
+        else if(type==26) t="RBRACKET";
+        else if(type==18) t="RPARENT";
+        else t=type+"";
+        GraError+=("line " + line + " : next token should be -> " + t);
         GraError+="\n";
-        throw new ParserException("line " + getNextTokenLineNo() + " : next token should be -> " + new Token(type, 0));
+        //throw new ParserException("line " + currentToken.lineNo + " : next token should be -> " + new Token(type, 0));
     }//消耗一个tokenNO期望的token
     private static boolean checkNextTokenType(int ... type) {
         if (iterator.hasNext()) {

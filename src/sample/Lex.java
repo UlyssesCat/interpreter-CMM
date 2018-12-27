@@ -55,8 +55,8 @@ public class Lex {
 
     public static void readChar() {
 //        if(inputChar[count]!='#') {
-            currentChar = inputChar[count++];
-            if (currentChar == '\n') lineNo++;
+        currentChar = inputChar[count++];
+        if (currentChar == '\n') lineNo++;
 //        }else{
 //            System.exit(-1);
 //        }

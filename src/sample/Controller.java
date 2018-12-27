@@ -65,13 +65,13 @@ public class Controller {
 
         TreeItem<String> it = visit(root,b);
         if(i1!=null)it.getChildren().add(i1);
-            //else it.getChildren().add(new TreeItem<>("null"));
+        //else it.getChildren().add(new TreeItem<>("null"));
         if(i2!=null)it.getChildren().add(i2);
-            //else it.getChildren().add(new TreeItem<>("null"));
+        //else it.getChildren().add(new TreeItem<>("null"));
         if(i3!=null)it.getChildren().add(i3);
-            //else it.getChildren().add(new TreeItem<>("null"));
+        //else it.getChildren().add(new TreeItem<>("null"));
         if(i4!=null)it.getChildren().add(i4);
-            //else it.getChildren().add(new TreeItem<>("null"));
+        //else it.getChildren().add(new TreeItem<>("null"));
         return it;
     }
     public static TreeItem<String> visit(TreeNode node,boolean b){

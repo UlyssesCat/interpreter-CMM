@@ -12,40 +12,40 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
-   <columnConstraints>
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-   </rowConstraints>
-   <children>
-      <Pane prefHeight="620.0" prefWidth="862.0" GridPane.hgrow="ALWAYS">
-         <children>
-            <Button fx:id="btn_read" layoutX="38.0" layoutY="9.0" mnemonicParsing="false" onAction="#btn_click" text="read" />
-            <TextArea fx:id="Text_input" editable="false" layoutY="39.0" prefHeight="581.0" prefWidth="473.0" />
-            <TabPane layoutX="473.0" prefHeight="620.0" prefWidth="389.0" tabClosingPolicy="UNAVAILABLE">
-              <tabs>
-                <Tab text="Lex">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="161.0" prefWidth="458.0">
-                           <children>
-                              <TextArea fx:id="Text_token" prefHeight="576.0" prefWidth="389.0" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </Tab>
-                <Tab text="Parse">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <TreeView fx:id="tv" prefHeight="573.0" prefWidth="389.0" />
-                           </children>
-                        </AnchorPane>
-                  </content>
-                </Tab>
-              </tabs>
-            </TabPane>
-         </children>
-      </Pane>
-   </children>
+    <columnConstraints>
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+    </rowConstraints>
+    <children>
+        <Pane prefHeight="620.0" prefWidth="862.0" GridPane.hgrow="ALWAYS">
+            <children>
+                <Button fx:id="btn_read" layoutX="38.0" layoutY="9.0" mnemonicParsing="false" onAction="#btn_click" text="read" />
+                <TextArea fx:id="Text_input" editable="false" layoutY="39.0" prefHeight="581.0" prefWidth="473.0" />
+                <TabPane layoutX="473.0" prefHeight="620.0" prefWidth="389.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                        <Tab text="Lex">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="161.0" prefWidth="458.0">
+                                    <children>
+                                        <TextArea fx:id="Text_token" prefHeight="576.0" prefWidth="389.0" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                        <Tab text="Parse">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                    <children>
+                                        <TreeView fx:id="tv" prefHeight="573.0" prefWidth="389.0" />
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </Tab>
+                    </tabs>
+                </TabPane>
+            </children>
+        </Pane>
+    </children>
 </GridPane>
